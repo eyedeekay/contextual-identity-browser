@@ -1,0 +1,7 @@
+#! /usr/bin/env sh
+
+if [ -f "/etc/contextual-identity-browser.conf" ]; then
+    . "/etc/contextual-identity-browser.conf"
+else
+    exit
+fi

@@ -1,0 +1,42 @@
+#! /usr/bin/env sh
+
+usage(){
+    echo "usage"
+}
+
+if [ -f "/etc/contextual-identity-browser.conf" ]; then
+    . "/etc/contextual-identity-browser.conf"
+else
+    echo "Config file /etc/contextual-identity-browser.conf not found"
+    exit
+fi
+
+if [ ! -z "$CIB_config_directory" ]; then
+    if [ ! -d "$CIB_config_directory" ]; then
+        mkdir -p "$CIB_config_directory"
+    fi
+else
+    echo "Browser config directory $CIB_config_directory not configured "
+    exit
+fi
+
+if [ ! -z "$CIB_default_browser_config" ]; then
+    if [ ! -f "$CIB_default_browser_config" ]; then
+        echo "browser config file $CIB_default_browser_config not found"
+        exit
+    fi
+else
+    echo "browser config file $CIB_default_browser_config not set"
+    exit
+fi
+
+if [ -z $1 ]; then
+    usage
+    exit
+else
+    mkdir -p "$CIB_config_directory/$1" "$CIB_cache_directory/$1/data" "$CIB_cache_directory/$1/cookies"
+    cp "$CIB_default_browser_config" "$CIB_config_directory/$1/$1"
+    /usr/lib/contextual-identity-browser/configurate "$CIB_config_directory/$1/$1" "$CIB_config_directory/$1/config"
+fi
+
+$CIB_use_torsocks $CIB_default_browser -c "$CIB_config_directory/$1/config"

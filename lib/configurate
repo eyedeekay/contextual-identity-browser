@@ -1,0 +1,34 @@
+#! /usr/bin/env sh
+
+if [ -f "/etc/contextual-identity-browser.conf" ]; then
+    echo "/etc/contextual-identity-browser.conf"
+    . "/etc/contextual-identity-browser.conf"
+else
+    echo "Config file /etc/contextual-identity-browser.conf not found"
+    exit
+fi
+
+echo "$CIB_default_browser"
+
+CIB_conf_conf_file="$(echo "$CIB_default_browser" | sed 's|/usr/bin/||g')"
+
+echo "$CIB_conf_conf_file"
+
+if [ -f "/usr/lib/contextual-identity-browser/$CIB_conf_conf_file.conf" ]; then
+    echo "/usr/lib/contextual-identity-browser/$CIB_conf_conf_file.conf"
+    . "/usr/lib/contextual-identity-browser/$CIB_conf_conf_file.conf"
+else
+    echo "Browser config file /usr/lib/contextual-identity-browser/$CIB_conf_conf_file.conf not found"
+    exit
+fi
+
+if [ ! -z $1 ]; then
+    cat "$HOME/.config/uzbl/config" | \
+    set_cookie_domain "$1" | \
+    set_cookie_folder "$1" | \
+    set_cache_folder "$1" | \
+    set_config_folder "$1" | \
+    set_user_agent
+else
+    exit
+fi
